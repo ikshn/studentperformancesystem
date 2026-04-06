@@ -1,102 +1,154 @@
-// Sample Quiz Data in JSON format
-const quizzesData = [
-    {
-        id: 1,
-        title: "Mathematics Basics",
-        description: "Test your math skills",
-        questions: [
+// Quiz data storage
+let quizzesData = [];
+let newQuizQuestions = [];
+let nextQuizId = 5;
+
+// Load quizzes from localStorage or initialize with sample data
+function loadQuizzes() {
+    const savedQuizzes = localStorage.getItem('quizzesData');
+    if (savedQuizzes) {
+        quizzesData = JSON.parse(savedQuizzes);
+        const maxId = Math.max(...quizzesData.map(q => q.id), 0);
+        nextQuizId = maxId + 1;
+    } else {
+        quizzesData = [
             {
-                question: "What is 15 + 27?",
-                options: ["42", "43", "40", "44"],
-                correct: 0
+                id: 1,
+                title: "Mathematics Basics",
+                description: "Test your math skills",
+                questions: [
+                    {
+                        question: "What is 15 + 27?",
+                        options: ["42", "43", "40", "44"],
+                        correct: 0
+                    },
+                    {
+                        question: "What is 100 ÷ 5?",
+                        options: ["15", "20", "25", "30"],
+                        correct: 1
+                    },
+                    {
+                        question: "What is 12 × 8?",
+                        options: ["86", "94", "96", "100"],
+                        correct: 2
+                    },
+                    {
+                        question: "What is 50 - 18?",
+                        options: ["32", "30", "28", "35"],
+                        correct: 0
+                    },
+                    {
+                        question: "What is 7²?",
+                        options: ["42", "49", "56", "63"],
+                        correct: 1
+                    }
+                ]
             },
             {
-                question: "What is 100 ÷ 5?",
-                options: ["15", "20", "25", "30"],
-                correct: 1
+                id: 2,
+                title: "General Knowledge",
+                description: "Expand your knowledge",
+                questions: [
+                    {
+                        question: "What is the capital of France?",
+                        options: ["Lyon", "Paris", "Marseille", "Toulouse"],
+                        correct: 1
+                    },
+                    {
+                        question: "Which planet is closest to the sun?",
+                        options: ["Venus", "Mercury", "Earth", "Mars"],
+                        correct: 1
+                    },
+                    {
+                        question: "Who wrote Romeo and Juliet?",
+                        options: ["Christopher Marlowe", "William Shakespeare", "Ben Jonson", "John Webster"],
+                        correct: 1
+                    },
+                    {
+                        question: "What is the largest ocean on Earth?",
+                        options: ["Atlantic", "Indian", "Arctic", "Pacific"],
+                        correct: 3
+                    },
+                    {
+                        question: "In what year did World War II end?",
+                        options: ["1943", "1944", "1945", "1946"],
+                        correct: 2
+                    }
+                ]
             },
             {
-                question: "What is 12 × 8?",
-                options: ["86", "94", "96", "100"],
-                correct: 2
+                id: 3,
+                title: "Science & Technology",
+                description: "Challenge your tech knowledge",
+                questions: [
+                    {
+                        question: "What does HTML stand for?",
+                        options: ["Hyper Text Markup Language", "High Tech Modern Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Language"],
+                        correct: 0
+                    },
+                    {
+                        question: "What is the chemical symbol for Gold?",
+                        options: ["Go", "Gd", "Au", "Ag"],
+                        correct: 2
+                    },
+                    {
+                        question: "How many bytes are in a gigabyte?",
+                        options: ["1000", "1,000,000", "1,000,000,000", "1,000,000,000,000"],
+                        correct: 2
+                    },
+                    {
+                        question: "What is the speed of light approximately?",
+                        options: ["300,000 km/s", "150,000 km/s", "500,000 km/s", "100,000 km/s"],
+                        correct: 0
+                    },
+                    {
+                        question: "Who invented the Internet?",
+                        options: ["Bill Gates", "Steve Jobs", "Vint Cerf and Bob Kahn", "Tim Berners-Lee"],
+                        correct: 2
+                    }
+                ]
             },
             {
-                question: "What is 50 - 18?",
-                options: ["32", "30", "28", "35"],
-                correct: 0
-            },
-            {
-                question: "What is 7²?",
-                options: ["42", "49", "56", "63"],
-                correct: 1
+                id: 4,
+                title: "Java Basic",
+                description: "Test your java skills",
+                questions: [
+                    {
+                        question: "What is old name of java?",
+                        options: ["oak", "lka", "oka", "coffee"],
+                        correct: 0
+                    },
+                    {
+                        question: "Who is father of java?",
+                        options: ["DEnnis", "James Gosling", "Guido van Rossum", "Bjarne Stroustrup"],
+                        correct: 1
+                    },
+                    {
+                        question: "What is output of System.out.println(12 * 8)?",
+                        options: ["86", "94", "96", "100"],
+                        correct: 2
+                    },
+                    {
+                        question: "What is output of System.out.println(12 - 8)?",
+                        options: ["4", "5", "28", "35"],
+                        correct: 0
+                    },
+                    {
+                        question: "What is java Feature?",
+                        options: ["Platform Independent", "Object-Oriented", "Robust", "all"],
+                        correct: 3
+                    }
+                ]
             }
-        ]
-    },
-    {
-        id: 2,
-        title: "General Knowledge",
-        description: "Expand your knowledge",
-        questions: [
-            {
-                question: "What is the capital of France?",
-                options: ["Lyon", "Paris", "Marseille", "Toulouse"],
-                correct: 1
-            },
-            {
-                question: "Which planet is closest to the sun?",
-                options: ["Venus", "Mercury", "Earth", "Mars"],
-                correct: 1
-            },
-            {
-                question: "Who wrote Romeo and Juliet?",
-                options: ["Christopher Marlowe", "William Shakespeare", "Ben Jonson", "John Webster"],
-                correct: 1
-            },
-            {
-                question: "What is the largest ocean on Earth?",
-                options: ["Atlantic", "Indian", "Arctic", "Pacific"],
-                correct: 3
-            },
-            {
-                question: "In what year did World War II end?",
-                options: ["1943", "1944", "1945", "1946"],
-                correct: 2
-            }
-        ]
-    },
-    {
-        id: 3,
-        title: "Science & Technology",
-        description: "Challenge your tech knowledge",
-        questions: [
-            {
-                question: "What does HTML stand for?",
-                options: ["Hyper Text Markup Language", "High Tech Modern Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Language"],
-                correct: 0
-            },
-            {
-                question: "What is the chemical symbol for Gold?",
-                options: ["Go", "Gd", "Au", "Ag"],
-                correct: 2
-            },
-            {
-                question: "How many bytes are in a gigabyte?",
-                options: ["1000", "1,000,000", "1,000,000,000", "1,000,000,000,000"],
-                correct: 2
-            },
-            {
-                question: "What is the speed of light approximately?",
-                options: ["300,000 km/s", "150,000 km/s", "500,000 km/s", "100,000 km/s"],
-                correct: 0
-            },
-            {
-                question: "Who invented the Internet?",
-                options: ["Bill Gates", "Steve Jobs", "Vint Cerf and Bob Kahn", "Tim Berners-Lee"],
-                correct: 2
-            }
-        ]
+        ];
+        saveQuizzes();
     }
-];
+}
+
+// Save quizzes to localStorage
+function saveQuizzes() {
+    localStorage.setItem('quizzesData', JSON.stringify(quizzesData));
+}
 
 // Global Variables
 let students = [];
@@ -116,6 +168,7 @@ let achievements = {
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
+    loadQuizzes();
     loadDataFromStorage();
     setupThemeToggle();
     setupNavigation();
@@ -810,4 +863,163 @@ function displayStudentInfo() {
     // Show info card
     infoCard.style.display = 'block';
     noSelection.style.display = 'none';
+}
+
+// ========== QUIZ CREATION FUNCTIONS ==========
+
+// Show Add Quiz Form
+function showAddQuizForm() {
+    newQuizQuestions = [];
+    document.getElementById('quizTitle').value = '';
+    document.getElementById('quizDescription').value = '';
+    document.getElementById('questionsContainer').innerHTML = '';
+    document.getElementById('addQuizModal').style.display = 'flex';
+    addNewQuestion(); // Add one empty question by default
+}
+
+// Hide Add Quiz Form
+function hideAddQuizForm() {
+    document.getElementById('addQuizModal').style.display = 'none';
+    newQuizQuestions = [];
+}
+
+// Add New Question to the form
+function addNewQuestion() {
+    const questionIndex = newQuizQuestions.length;
+    const questionHTML = `
+        <div class="question-form" id="question-${questionIndex}" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 8px; background: #f9f9f9;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <label>Question ${questionIndex + 1}:</label>
+                <button class="btn-delete" onclick="removeQuestion(${questionIndex})" style="padding: 5px 10px; font-size: 0.9em;">🗑️ Remove</button>
+            </div>
+            <input type="text" class="form-input" placeholder="Enter question" value="" onchange="updateQuestion(${questionIndex}, 'question', this.value)" style="margin-bottom: 10px;">
+            
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; margin-bottom: 8px;">Options:</label>
+                <div id="options-${questionIndex}"></div>
+                <button class="btn-secondary" onclick="addOption(${questionIndex})" style="width: 100%; margin-top: 8px; padding: 8px;">➕ Add Option</button>
+            </div>
+            
+            <div style="margin-top: 10px;">
+                <label>Correct Answer (option number):</label>
+                <input type="number" class="form-input" min="0" max="3" placeholder="0" value="0" onchange="updateQuestion(${questionIndex}, 'correct', parseInt(this.value))" style="width: 100px;">
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('questionsContainer').innerHTML += questionHTML;
+    newQuizQuestions.push({
+        question: '',
+        options: ['', '', '', ''],
+        correct: 0
+    });
+    
+    // Add default 4 options
+    for (let i = 0; i < 4; i++) {
+        addOption(questionIndex, i);
+    }
+}
+
+// Add Option to a question
+function addOption(questionIndex, optionIndex = null) {
+    const optionsContainer = document.getElementById(`options-${questionIndex}`);
+    if (!optionsContainer) return;
+    
+    const currentOptions = optionsContainer.children.length;
+    const optionHTML = `
+        <div style="display: flex; gap: 8px; margin-bottom: 8px;" id="option-${questionIndex}-${currentOptions}">
+            <input type="text" class="form-input" placeholder="Option ${currentOptions + 1}" onchange="updateOption(${questionIndex}, ${currentOptions}, this.value)" style="flex: 1;">
+            <button class="btn-delete" onclick="removeOption(${questionIndex}, ${currentOptions})" style="padding: 8px 12px;">✕</button>
+        </div>
+    `;
+    optionsContainer.innerHTML += optionHTML;
+}
+
+// Remove Question
+function removeQuestion(questionIndex) {
+    const element = document.getElementById(`question-${questionIndex}`);
+    if (element) {
+        element.remove();
+    }
+    newQuizQuestions.splice(questionIndex, 1);
+}
+
+// Remove Option
+function removeOption(questionIndex, optionIndex) {
+    const element = document.getElementById(`option-${questionIndex}-${optionIndex}`);
+    if (element) {
+        element.remove();
+    }
+    if (newQuizQuestions[questionIndex]) {
+        newQuizQuestions[questionIndex].options.splice(optionIndex, 1);
+    }
+}
+
+// Update Question
+function updateQuestion(questionIndex, field, value) {
+    if (newQuizQuestions[questionIndex]) {
+        newQuizQuestions[questionIndex][field] = value;
+    }
+}
+
+// Update Option
+function updateOption(questionIndex, optionIndex, value) {
+    if (newQuizQuestions[questionIndex]) {
+        newQuizQuestions[questionIndex].options[optionIndex] = value;
+    }
+}
+
+// Save New Quiz
+function saveNewQuiz() {
+    const title = document.getElementById('quizTitle').value.trim();
+    const description = document.getElementById('quizDescription').value.trim();
+    
+    if (!title) {
+        alert('❌ Please enter a quiz title');
+        return;
+    }
+    
+    if (!description) {
+        alert('❌ Please enter a quiz description');
+        return;
+    }
+    
+    // Filter and validate questions
+    const validQuestions = newQuizQuestions.filter(q => {
+        return q.question.trim() !== '' && 
+               q.options.filter(o => o.trim() !== '').length >= 2 &&
+               typeof q.correct === 'number' &&
+               q.correct >= 0;
+    });
+    
+    if (validQuestions.length === 0) {
+        alert('❌ Please add at least one valid question with at least 2 options');
+        return;
+    }
+    
+    // Create new quiz object
+    const newQuiz = {
+        id: nextQuizId,
+        title: title,
+        description: description,
+        questions: validQuestions.map(q => ({
+            question: q.question,
+            options: q.options.filter(o => o.trim() !== ''),
+            correct: Math.min(q.correct, q.options.filter(o => o.trim() !== '').length - 1)
+        }))
+    };
+    
+    // Add to quizzesData
+    quizzesData.push(newQuiz);
+    nextQuizId++;
+    
+    // Save to localStorage
+    saveQuizzes();
+    
+    // Show success message
+    alert('✅ Quiz created successfully!');
+    
+    // Hide form and refresh quiz list
+    hideAddQuizForm();
+    renderQuizzes();
 }

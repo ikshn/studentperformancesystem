@@ -95,6 +95,38 @@
           "correct": 2
         }
       ]
+    },
+    {
+      "id": 4,
+      "title": "Java Basic",
+      "description": "Test your java skills",
+      "questions": [
+        {
+          "question": "What is old name of java?",
+          "options": ["oak", "lka", "oka", "coffee"],
+          "correct": 0
+        },
+        {
+          "question": "Who is father of java?",
+          "options": ["DEnnis", "James Gosling", "Guido van Rossum", "Bjarne Stroustrup"],
+          "correct": 1
+        },
+        {
+          "question": "What is output of System.out.println(12 * 8)?",
+          "options": ["86", "94", "96", "100"],
+          "correct": 2
+        },
+        {
+          "question": "What is output of System.out.println(12 - 8)?",
+          "options": ["4", "5", "28", "35"],
+          "correct": 0
+        },
+        {
+          "question": "What is java Feature?",
+          "options": ["Platform Independent", "Object-Oriented", "Robust", "all"],
+          "correct": 3
+        }
+      ]
     }
   ],
   "students": [

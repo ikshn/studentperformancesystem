@@ -139,8 +139,37 @@
             <section id="quiz" class="section">
                 <h2>🎯 Quiz Challenge</h2>
                 <div id="quizStartMenu" class="quiz-menu">
-                    <h3>Select a Quiz</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0;">Select a Quiz</h3>
+                        <button class="btn-primary" onclick="showAddQuizForm()" title="Create a new quiz">➕ Add New Quiz</button>
+                    </div>
                     <div id="quizList" class="quiz-list"></div>
+                </div>
+                
+                <!-- Add Quiz Form Modal -->
+                <div id="addQuizModal" class="quiz-modal" style="display: none;">
+                    <div class="quiz-modal-content">
+                        <div class="modal-header">
+                            <h2>📝 Create New Quiz</h2>
+                            <button class="close-btn" onclick="hideAddQuizForm()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="quizTitle">Quiz Title:</label>
+                                <input type="text" id="quizTitle" placeholder="Enter quiz title" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="quizDescription">Quiz Description:</label>
+                                <input type="text" id="quizDescription" placeholder="Enter quiz description" class="form-input">
+                            </div>
+                            <div id="questionsContainer" class="questions-container"></div>
+                            <button class="btn-secondary" onclick="addNewQuestion()" style="width: 100%; margin-top: 15px;">➕ Add Question</button>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-secondary" onclick="hideAddQuizForm()">❌ Cancel</button>
+                            <button class="btn-primary" onclick="saveNewQuiz()">✅ Save Quiz</button>
+                        </div>
+                    </div>
                 </div>
                 <div id="quizContent" class="quiz-container" style="display: none;">
                     <div class="quiz-header">
