@@ -231,15 +231,7 @@ function loadQuizzes() {
                         options: ["Bill Gates", "Steve Jobs", "Vint Cerf and Bob Kahn", "Tim Berners-Lee"],
                         correct: 2
                     }
-                ]                const users = [
-                    { username: 'student', password: 'student', role: 'student', name: 'Student User' },
-                    { username: 'teacher', password: 'teacher', role: 'teacher', name: 'Teacher User' },
-                    { username: 'admin', password: 'admin', role: 'teacher', name: 'Administrator' }
-                ];                const users = [
-                    { username: 'student', password: 'student', role: 'student', name: 'Student User' },
-                    { username: 'teacher', password: 'teacher', role: 'teacher', name: 'Teacher User' },
-                    { username: 'admin', password: 'admin', role: 'teacher', name: 'Administrator' }
-                ];
+                ]
             },
             {
                 id: 4,
