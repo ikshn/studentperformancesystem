@@ -4,6 +4,35 @@ https://ikshn.github.io/studentperformancesystem/
 
 An aesthetic, fully-functional student performance management system built with HTML, CSS, JavaScript, and JSON data storage.
 
+## 🚀 New Features: Login System & Role-Based Access
+
+### Authentication
+- **Secure Login**: Users must login before accessing the system
+- **Role-Based Access**: Different permissions for Students and Teachers
+- **Session Management**: Login state persists across browser sessions
+
+### User Roles
+
+#### 👨‍🎓 Student Access
+- **Username**: `student`
+- **Password**: `student`
+- **Permissions**:
+  - View Dashboard (read-only)
+  - Take Quizzes
+  - View Leaderboard
+  - View Achievements
+  - View Student Information
+
+#### 👨‍🏫 Teacher Access
+- **Username**: `teacher` or `admin`
+- **Password**: `teacher` or `admin`
+- **Permissions** (All Student permissions plus):
+  - Add new students
+  - Delete students
+  - Create new quizzes
+  - Access Analytics section
+  - Full student management
+
 ## Features
 
 ### 1. **Dashboard** 📊
@@ -14,7 +43,7 @@ An aesthetic, fully-functional student performance management system built with 
 - Total quizzes completed
 - Recent student activities and updates
 
-### 2. **Student Management** 👥
+### 2. **Student Management** 👥 (Teacher Only)
 - Add new students with their performance scores
 - View all students with score visualization
 - Beautiful progress bars showing score percentages
@@ -22,10 +51,11 @@ An aesthetic, fully-functional student performance management system built with 
 - Real-time data persistence using localStorage
 
 ### 3. **Quiz Feature** ✅
-- Three different quizzes available:
+- Four different quizzes available:
   - Mathematics Basics (5 questions)
   - General Knowledge (5 questions)
   - Science & Technology (5 questions)
+  - Java Basic (5 questions)
 - Interactive quiz interface with:
   - Step-by-step question progression
   - Multiple choice options
@@ -36,12 +66,20 @@ An aesthetic, fully-functional student performance management system built with 
   - Final score percentage
   - Number of correct answers
   - Ability to attempt other quizzes
+- **Teacher Feature**: Create custom quizzes with multiple questions
 
-### 4. **Performance Analytics** 📈
+### 4. **Performance Analytics** 📈 (Teacher Only)
 - Visual representation of student performance
 - Bar chart showing all students' scores
 - Score table with sorted rankings
 - Easy comparison of student performance
+
+### 5. **Additional Features**
+- **Student Information & Attendance**: Track quiz attempts and attendance
+- **Leaderboard**: Rank students by performance
+- **Achievements**: Unlock badges for milestones
+- **Dark Mode**: Toggle between light and dark themes
+- **Responsive Design**: Works on all device sizes
 
 ## Technical Details
 
@@ -60,6 +98,53 @@ An aesthetic, fully-functional student performance management system built with 
 - Modern gradient design (Purple & Blue)
 - Smooth animations and transitions
 - Responsive design for mobile, tablet, and desktop
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+- Local web server (for local development)
+
+### Installation & Usage
+
+1. **Clone or Download** the repository
+2. **Open terminal** in the project directory
+3. **Start local server**:
+   ```bash
+   python -m http.server 8000
+   ```
+4. **Open browser** and navigate to: `http://localhost:8000`
+5. **Login** with one of the following credentials:
+
+#### Student Login
+- Username: `student`
+- Password: `student`
+- Role: Student
+
+#### Teacher Login
+- Username: `teacher` (or `admin`)
+- Password: `teacher` (or `admin`)
+- Role: Teacher
+
+### Features by Role
+
+#### For Students:
+- ✅ View Dashboard
+- ✅ Take Quizzes
+- ✅ View Leaderboard
+- ✅ View Achievements
+- ✅ View Student Information
+
+#### For Teachers:
+- ✅ All Student features
+- ✅ Add/Delete Students
+- ✅ Create New Quizzes
+- ✅ Access Analytics
+- ✅ Full System Management
+
+## 📱 Screenshots
+
+*(Add screenshots of login page, dashboard, quiz interface, etc.)*
 - Professional card-based layout
 - Intuitive navigation
 

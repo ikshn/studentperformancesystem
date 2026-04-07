@@ -10,24 +10,57 @@
     <!-- Confetti Container -->
     <div id="confetti-container"></div>
 
-    <div class="container">
+    <!-- Login Section -->
+    <div id="loginSection" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>🎓 Student Performance System</h1>
+                <p>Please login to continue</p>
+            </div>
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" placeholder="Enter username" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="Enter password" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="userRole">Login as:</label>
+                    <select id="userRole" class="form-input">
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                    </select>
+                </div>
+                <button class="btn-primary login-btn" onclick="login()">Login</button>
+                <div id="loginError" class="error-message" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer" style="display: none;">
         <!-- Header -->
         <header class="header">
             <div class="header-content">
                 <h1>📚 Student Performance Hub</h1>
                 <p class="subtitle">Track, Learn & Achieve</p>
             </div>
-            <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">🌙</button>
+            <div class="header-actions">
+                <span id="currentUser" class="user-info"></span>
+                <button class="btn-secondary logout-btn" onclick="logout()">Logout</button>
+                <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">🌙</button>
+            </div>
         </header>
 
         <!-- Navigation -->
         <nav class="navbar">
             <button class="nav-btn active" data-section="dashboard">Dashboard</button>
-            <button class="nav-btn" data-section="students">Students</button>
+            <button class="nav-btn teacher-only" data-section="students" style="display: none;">Students</button>
             <button class="nav-btn" data-section="studentInfo">Student Info</button>
             <button class="nav-btn" data-section="leaderboard">Leaderboard</button>
             <button class="nav-btn" data-section="quiz">Quiz</button>
-            <button class="nav-btn" data-section="analytics">Analytics</button>
+            <button class="nav-btn teacher-only" data-section="analytics" style="display: none;">Analytics</button>
             <button class="nav-btn" data-section="achievements">Achievements</button>
         </nav>
 
@@ -68,7 +101,7 @@
             <!-- Students Section -->
             <section id="students" class="section">
                 <h2>Student Management</h2>
-                <div class="add-student-form">
+                <div class="add-student-form teacher-only" style="display: none;">
                     <input type="text" id="studentName" placeholder="Enter student name">
                     <input type="number" id="studentScore" placeholder="Enter score (0-100)">
                     <button class="btn-primary" onclick="addStudent()">Add Student</button>
@@ -141,7 +174,7 @@
                 <div id="quizStartMenu" class="quiz-menu">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h3 style="margin: 0;">Select a Quiz</h3>
-                        <button class="btn-primary" onclick="showAddQuizForm()" title="Create a new quiz">➕ Add New Quiz</button>
+                        <button class="btn-primary teacher-only" onclick="showAddQuizForm()" title="Create a new quiz" style="display: none;">➕ Add New Quiz</button>
                     </div>
                     <div id="quizList" class="quiz-list"></div>
                 </div>

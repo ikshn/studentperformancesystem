@@ -1,3 +1,128 @@
+// ========== AUTHENTICATION SYSTEM ==========
+let currentUser = null;
+
+// Simple user database (in production, this would be server-side)
+const users = [
+    { username: 'student', password: 'student', role: 'student', name: 'Student User' },
+    { username: 'teacher', password: 'teacher', role: 'teacher', name: 'Teacher User' },
+    { username: 'admin', password: 'admin', role: 'teacher', name: 'Administrator' }
+];
+
+// Check if user is logged in on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        showMainApp();
+        setupRoleBasedAccess();
+    } else {
+        showLoginPage();
+    }
+
+    // Initialize other components only if logged in
+    if (currentUser) {
+        loadQuizzes();
+        loadDataFromStorage();
+        setupThemeToggle();
+        setupNavigation();
+        renderDashboard();
+        renderQuizzes();
+        renderStudents();
+        renderLeaderboard();
+        renderAchievements();
+        updateAnalytics();
+        populateStudentDropdown();
+    }
+});
+
+// Show login page
+function showLoginPage() {
+    document.getElementById('loginSection').style.display = 'flex';
+    document.getElementById('mainContainer').style.display = 'none';
+}
+
+// Show main application
+function showMainApp() {
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('mainContainer').style.display = 'block';
+    document.getElementById('currentUser').textContent = `Welcome, ${currentUser.name} (${currentUser.role})`;
+}
+
+// Login function
+function login() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const role = document.getElementById('userRole').value;
+    const errorDiv = document.getElementById('loginError');
+
+    // Find user
+    const user = users.find(u => u.username === username && u.password === password && u.role === role);
+
+    if (user) {
+        currentUser = user;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        errorDiv.style.display = 'none';
+        showMainApp();
+        setupRoleBasedAccess();
+
+        // Initialize app components
+        loadQuizzes();
+        loadDataFromStorage();
+        setupThemeToggle();
+        setupNavigation();
+        renderDashboard();
+        renderQuizzes();
+        renderStudents();
+        renderLeaderboard();
+        renderAchievements();
+        updateAnalytics();
+        populateStudentDropdown();
+    } else {
+        errorDiv.textContent = '❌ Invalid username, password, or role. Please try again.';
+        errorDiv.style.display = 'block';
+    }
+}
+
+// Logout function
+function logout() {
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    showLoginPage();
+}
+
+// Setup role-based access control
+function setupRoleBasedAccess() {
+    if (!currentUser) return;
+
+    const teacherElements = document.querySelectorAll('.teacher-only');
+
+    if (currentUser.role === 'teacher') {
+        // Show teacher-only elements
+        teacherElements.forEach(el => el.style.display = 'inline-block');
+    } else {
+        // Hide teacher-only elements for students
+        teacherElements.forEach(el => el.style.display = 'none');
+    }
+}
+
+// Check if current user has permission for an action
+function hasPermission(action) {
+    if (!currentUser) return false;
+
+    switch (action) {
+        case 'addQuiz':
+        case 'deleteStudent':
+        case 'manageStudents':
+            return currentUser.role === 'teacher';
+        case 'takeQuiz':
+        case 'viewLeaderboard':
+        case 'viewAchievements':
+            return true; // Both students and teachers can do these
+        default:
+            return false;
+    }
+}
+
 // Quiz data storage
 let quizzesData = [];
 let newQuizQuestions = [];
@@ -106,7 +231,15 @@ function loadQuizzes() {
                         options: ["Bill Gates", "Steve Jobs", "Vint Cerf and Bob Kahn", "Tim Berners-Lee"],
                         correct: 2
                     }
-                ]
+                ]                const users = [
+                    { username: 'student', password: 'student', role: 'student', name: 'Student User' },
+                    { username: 'teacher', password: 'teacher', role: 'teacher', name: 'Teacher User' },
+                    { username: 'admin', password: 'admin', role: 'teacher', name: 'Administrator' }
+                ];                const users = [
+                    { username: 'student', password: 'student', role: 'student', name: 'Student User' },
+                    { username: 'teacher', password: 'teacher', role: 'teacher', name: 'Teacher User' },
+                    { username: 'admin', password: 'admin', role: 'teacher', name: 'Administrator' }
+                ];
             },
             {
                 id: 4,
@@ -165,21 +298,6 @@ let achievements = {
     topScorer: false,
     speedDemon: false
 };
-
-// Initialize the app
-document.addEventListener('DOMContentLoaded', function() {
-    loadQuizzes();
-    loadDataFromStorage();
-    setupThemeToggle();
-    setupNavigation();
-    renderDashboard();
-    renderQuizzes();
-    renderStudents();
-    renderLeaderboard();
-    renderAchievements();
-    updateAnalytics();
-    populateStudentDropdown();
-});
 
 // Load data from localStorage (JSON storage)
 function loadDataFromStorage() {
@@ -308,6 +426,11 @@ function renderDashboard() {
 
 // Add a new student
 function addStudent() {
+    if (!hasPermission('manageStudents')) {
+        alert('❌ Access denied. Only teachers can manage students.');
+        return;
+    }
+
     const nameInput = document.getElementById('studentName');
     const scoreInput = document.getElementById('studentScore');
 
@@ -357,6 +480,7 @@ function renderStudents() {
 
     const studentsHTML = students.map(student => {
         const grade = getGradeLetter(student.score);
+        const deleteButton = hasPermission('deleteStudent') ? `<button class="btn-delete" onclick="deleteStudent(${student.id})">Delete</button>` : '';
         return `
             <div class="student-card">
                 <h4>${student.name}</h4>
@@ -367,7 +491,7 @@ function renderStudents() {
                 <p style="color: #999; margin-bottom: 15px;">Quizzes: ${student.quizzesCompleted}</p>
                 <span class="grade-badge ${grade.toLowerCase()}">${grade}</span>
                 <p style="color: #666; font-size: 0.9em; margin-bottom: 15px; margin-top: 10px;">${student.lastActivity}</p>
-                <button class="btn-delete" onclick="deleteStudent(${student.id})">Delete</button>
+                ${deleteButton}
             </div>
         `;
     }).join('');
@@ -388,6 +512,7 @@ function searchStudents() {
     } else {
         const studentsHTML = filteredStudents.map(student => {
             const grade = getGradeLetter(student.score);
+            const deleteButton = hasPermission('deleteStudent') ? `<button class="btn-delete" onclick="deleteStudent(${student.id})">Delete</button>` : '';
             return `
                 <div class="student-card">
                     <h4>${student.name}</h4>
@@ -398,7 +523,7 @@ function searchStudents() {
                     <p style="color: #999; margin-bottom: 15px;">Quizzes: ${student.quizzesCompleted}</p>
                     <span class="grade-badge ${grade.toLowerCase()}">${grade}</span>
                     <p style="color: #666; font-size: 0.9em; margin-bottom: 15px; margin-top: 10px;">${student.lastActivity}</p>
-                    <button class="btn-delete" onclick="deleteStudent(${student.id})">Delete</button>
+                    ${deleteButton}
                 </div>
             `;
         }).join('');
@@ -446,6 +571,11 @@ function renderLeaderboard() {
 
 // Delete a student
 function deleteStudent(id) {
+    if (!hasPermission('deleteStudent')) {
+        alert('❌ Access denied. Only teachers can delete students.');
+        return;
+    }
+
     if (confirm('Are you sure you want to delete this student?')) {
         students = students.filter(s => s.id !== id);
         saveDataToStorage();
@@ -869,6 +999,11 @@ function displayStudentInfo() {
 
 // Show Add Quiz Form
 function showAddQuizForm() {
+    if (!hasPermission('addQuiz')) {
+        alert('❌ Access denied. Only teachers can add quizzes.');
+        return;
+    }
+
     newQuizQuestions = [];
     document.getElementById('quizTitle').value = '';
     document.getElementById('quizDescription').value = '';
