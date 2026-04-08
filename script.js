@@ -1,10 +1,10 @@
 // ========== AUTHENTICATION SYSTEM ==========
 let currentUser = null;
 
-// Simple user database (in production, this would be server-side)
-const users = [
+// Load users from localStorage or initialize with default users
+let users = JSON.parse(localStorage.getItem('users')) || [
     { username: 'student', password: 'student', role: 'student', name: 'Student User' },
-    { username: 'teacher', password: 'teacher', role: 'teacher', name: 'Teacher User' },
+    { username: 'teacher', password: 'teacher', role: 'teacher', name: 'Teacher ' },
     { username: 'admin', password: 'admin', role: 'teacher', name: 'Administrator' }
 ];
 
@@ -38,12 +38,14 @@ document.addEventListener('DOMContentLoaded', function() {
 // Show login page
 function showLoginPage() {
     document.getElementById('loginSection').style.display = 'flex';
+    document.getElementById('registerSection').style.display = 'none';
     document.getElementById('mainContainer').style.display = 'none';
 }
 
 // Show main application
 function showMainApp() {
     document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('registerSection').style.display = 'none';
     document.getElementById('mainContainer').style.display = 'block';
     document.getElementById('currentUser').textContent = `Welcome, ${currentUser.name} (${currentUser.role})`;
 }
@@ -88,6 +90,61 @@ function logout() {
     currentUser = null;
     localStorage.removeItem('currentUser');
     showLoginPage();
+}
+
+// Show register form
+function showRegisterForm() {
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('registerSection').style.display = 'flex';
+}
+
+// Show login form
+function showLoginForm() {
+    document.getElementById('registerSection').style.display = 'none';
+    document.getElementById('loginSection').style.display = 'flex';
+}
+
+// Register function
+function register() {
+    const name = document.getElementById('regName').value.trim();
+    const username = document.getElementById('regUsername').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const role = document.getElementById('regRole').value;
+    const errorDiv = document.getElementById('registerError');
+
+    if (!name || !username || !password) {
+        errorDiv.textContent = '❌ Please fill in all fields.';
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    // Check if username already exists
+    const existingUser = users.find(u => u.username === username);
+    if (existingUser) {
+        errorDiv.textContent = '❌ Username already exists. Please choose a different one.';
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    // Add new user
+    const newUser = { username, password, role, name };
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
+
+    // Clear form
+    document.getElementById('regName').value = '';
+    document.getElementById('regUsername').value = '';
+    document.getElementById('regPassword').value = '';
+
+    errorDiv.textContent = '✅ Registration successful! You can now login.';
+    errorDiv.style.display = 'block';
+    errorDiv.style.color = 'green';
+
+    // Switch back to login after a short delay
+    setTimeout(() => {
+        showLoginForm();
+        errorDiv.style.display = 'none';
+    }, 2000);
 }
 
 // Setup role-based access control
@@ -997,10 +1054,12 @@ function showAddQuizForm() {
     }
 
     newQuizQuestions = [];
-    document.getElementById('quizTitle').value = '';
+    document.getElementById('quizTitleInput').value = '';
     document.getElementById('quizDescription').value = '';
     document.getElementById('questionsContainer').innerHTML = '';
     document.getElementById('addQuizModal').style.display = 'flex';
+    // Reset to manual tab
+    switchQuizTab('manual');
     addNewQuestion(); // Add one empty question by default
 }
 
@@ -1008,6 +1067,27 @@ function showAddQuizForm() {
 function hideAddQuizForm() {
     document.getElementById('addQuizModal').style.display = 'none';
     newQuizQuestions = [];
+    // Clear Excel file input
+    const fileInput = document.getElementById('excelFile');
+    if (fileInput) fileInput.value = '';
+}
+
+// Switch between quiz creation tabs
+function switchQuizTab(tab) {
+    // Hide all tabs
+    document.getElementById('manualTab').classList.remove('active');
+    document.getElementById('excelTab').classList.remove('active');
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    // Show selected tab
+    document.getElementById(tab + 'Tab').classList.add('active');
+    event.target.classList.add('active');
+    
+    // Show/hide save buttons
+    document.getElementById('saveManualBtn').style.display = tab === 'manual' ? 'inline-block' : 'none';
+    document.getElementById('saveExcelBtn').style.display = tab === 'excel' ? 'inline-block' : 'none';
 }
 
 // Add New Question to the form
@@ -1098,7 +1178,7 @@ function updateOption(questionIndex, optionIndex, value) {
 
 // Save New Quiz
 function saveNewQuiz() {
-    const title = document.getElementById('quizTitle').value.trim();
+    const title = document.getElementById('quizTitleInput').value.trim();
     const description = document.getElementById('quizDescription').value.trim();
     
     if (!title) {
@@ -1149,4 +1229,101 @@ function saveNewQuiz() {
     // Hide form and refresh quiz list
     hideAddQuizForm();
     renderQuizzes();
+}
+
+// Save quiz from Excel file
+function saveQuizFromExcel() {
+    const title = document.getElementById('quizTitleInputExcel').value.trim();
+    const description = document.getElementById('quizDescriptionExcel').value.trim();
+    const fileInput = document.getElementById('excelFile');
+    
+    if (!title) {
+        alert('❌ Please enter a quiz title');
+        return;
+    }
+    
+    if (!description) {
+        alert('❌ Please enter a quiz description');
+        return;
+    }
+    
+    if (!fileInput.files || fileInput.files.length === 0) {
+        alert('❌ Please select an Excel file');
+        return;
+    }
+    
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            
+            // Assume first sheet
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            
+            // Convert to JSON
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            
+            // Parse questions (skip header row)
+            const questions = [];
+            for (let i = 1; i < jsonData.length; i++) {
+                const row = jsonData[i];
+                if (row.length >= 6) {
+                    const question = row[0] ? row[0].toString().trim() : '';
+                    const options = [
+                        row[1] ? row[1].toString().trim() : '',
+                        row[2] ? row[2].toString().trim() : '',
+                        row[3] ? row[3].toString().trim() : '',
+                        row[4] ? row[4].toString().trim() : ''
+                    ].filter(opt => opt !== '');
+                    
+                    const correctIndex = parseInt(row[5]) - 1; // Convert 1-based to 0-based
+                    
+                    if (question && options.length >= 2 && correctIndex >= 0 && correctIndex < options.length) {
+                        questions.push({
+                            question: question,
+                            options: options,
+                            correct: correctIndex
+                        });
+                    }
+                }
+            }
+            
+            if (questions.length === 0) {
+                alert('❌ No valid questions found in the Excel file. Please check the format.');
+                return;
+            }
+            
+            // Create new quiz object
+            const newQuiz = {
+                id: nextQuizId,
+                title: title,
+                description: description,
+                questions: questions
+            };
+            
+            // Add to quizzesData
+            quizzesData.push(newQuiz);
+            nextQuizId++;
+            
+            // Save to localStorage
+            saveQuizzes();
+            
+            // Show success message
+            alert(`✅ Quiz created successfully with ${questions.length} questions!`);
+            
+            // Hide form and refresh quiz list
+            hideAddQuizForm();
+            renderQuizzes();
+            
+        } catch (error) {
+            alert('❌ Error reading Excel file. Please check the file format.');
+            console.error('Excel parsing error:', error);
+        }
+    };
+    
+    reader.readAsArrayBuffer(file);
 }

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Performance System</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
 </head>
 <body>
     <!-- Confetti Container -->
@@ -34,7 +36,42 @@
                     </select>
                 </div>
                 <button class="btn-primary login-btn" onclick="login()">Login</button>
+                <button class="btn-secondary" onclick="showRegisterForm()">Register</button>
                 <div id="loginError" class="error-message" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Section -->
+    <div id="registerSection" class="login-container" style="display: none;">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>🎓 Register New Account</h1>
+                <p>Create your account</p>
+            </div>
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="regName">Full Name:</label>
+                    <input type="text" id="regName" placeholder="Enter full name" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="regUsername">Username:</label>
+                    <input type="text" id="regUsername" placeholder="Enter username" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Password:</label>
+                    <input type="password" id="regPassword" placeholder="Enter password" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="regRole">Register as:</label>
+                    <select id="regRole" class="form-input">
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                    </select>
+                </div>
+                <button class="btn-primary" onclick="register()">Register</button>
+                <button class="btn-secondary" onclick="showLoginForm()">Back to Login</button>
+                <div id="registerError" class="error-message" style="display: none;"></div>
             </div>
         </div>
     </div>
@@ -187,20 +224,52 @@
                             <button class="close-btn" onclick="hideAddQuizForm()">&times;</button>
                         </div>
                         <div class="modal-body">
-                            <div class="form-group">
-                                <label for="quizTitle">Quiz Title:</label>
-                                <input type="text" id="quizTitle" placeholder="Enter quiz title" class="form-input">
+                            <div class="quiz-tabs">
+                                <button class="tab-btn active" onclick="switchQuizTab('manual')">Manual Entry</button>
+                                <button class="tab-btn" onclick="switchQuizTab('excel')">Upload Excel</button>
                             </div>
-                            <div class="form-group">
-                                <label for="quizDescription">Quiz Description:</label>
-                                <input type="text" id="quizDescription" placeholder="Enter quiz description" class="form-input">
+                            <div id="manualTab" class="tab-content active">
+                                <div class="form-group">
+                                    <label for="quizTitleInput">Quiz Title:</label>
+                                    <input type="text" id="quizTitleInput" placeholder="Enter quiz title" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="quizDescription">Quiz Description:</label>
+                                    <input type="text" id="quizDescription" placeholder="Enter quiz description" class="form-input">
+                                </div>
+                                <div id="questionsContainer" class="questions-container"></div>
+                                <button class="btn-secondary" onclick="addNewQuestion()" style="width: 100%; margin-top: 15px;">➕ Add Question</button>
                             </div>
-                            <div id="questionsContainer" class="questions-container"></div>
-                            <button class="btn-secondary" onclick="addNewQuestion()" style="width: 100%; margin-top: 15px;">➕ Add Question</button>
+                            <div id="excelTab" class="tab-content">
+                                <div class="form-group">
+                                    <label for="quizTitleInputExcel">Quiz Title:</label>
+                                    <input type="text" id="quizTitleInputExcel" placeholder="Enter quiz title" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="quizDescriptionExcel">Quiz Description:</label>
+                                    <input type="text" id="quizDescriptionExcel" placeholder="Enter quiz description" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="excelFile">Upload Excel File:</label>
+                                    <input type="file" id="excelFile" accept=".xlsx,.xls" class="form-input">
+                                </div>
+                                <div class="excel-info">
+                                    <p><strong>Excel Format:</strong></p>
+                                    <ul>
+                                        <li>Column A: Question</li>
+                                        <li>Column B: Option 1</li>
+                                        <li>Column C: Option 2</li>
+                                        <li>Column D: Option 3</li>
+                                        <li>Column E: Option 4</li>
+                                        <li>Column F: Correct Answer (1-4)</li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn-secondary" onclick="hideAddQuizForm()">❌ Cancel</button>
-                            <button class="btn-primary" onclick="saveNewQuiz()">✅ Save Quiz</button>
+                            <button class="btn-primary" id="saveManualBtn" onclick="saveNewQuiz()">✅ Save Quiz</button>
+                            <button class="btn-primary" id="saveExcelBtn" onclick="saveQuizFromExcel()" style="display: none;">✅ Save Quiz</button>
                         </div>
                     </div>
                 </div>
