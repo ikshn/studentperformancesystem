@@ -153,7 +153,10 @@
             <section id="studentInfo" class="section">
                 <h2>📋 Student Information & Attendance</h2>
                 <div class="student-info-container">
-                    <div class="student-selector">
+                    <div id="studentMessageSection" style="display: none; margin-bottom: 20px; padding: 15px; background-color: #e8f4f8; border-left: 4px solid #2196F3; border-radius: 4px;">
+                        <p style="margin: 0; color: #1565c0; font-weight: 500;">✅ Showing Your Information</p>
+                    </div>
+                    <div class="student-selector teacher-only">
                         <select id="studentSelect" onchange="displayStudentInfo()" class="student-dropdown">
                             <option value="">-- Select a Student --</option>
                         </select>
@@ -192,7 +195,7 @@
                         </div>
                     </div>
                     <div id="noStudentSelected" class="no-selection-message">
-                        <p>Select a student to view their detailed information and attendance records</p>
+                        <p id="noSelectionText">Select a student to view their detailed information and attendance records</p>
                     </div>
                 </div>
             </section>

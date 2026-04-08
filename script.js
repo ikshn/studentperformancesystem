@@ -79,10 +79,97 @@ function login() {
         renderAchievements();
         updateAnalytics();
         populateStudentDropdown();
+
+        // If student, ensure they have a record and display their info
+        if (user.role === 'student') {
+            ensureStudentRecord(user);
+            // Navigate to Student Info section and show their data
+            setTimeout(() => {
+                navigateToSection('studentInfo');
+                displayCurrentStudentInfo();
+            }, 500);
+        }
     } else {
         errorDiv.textContent = '❌ Invalid username, password, or role. Please try again.';
         errorDiv.style.display = 'block';
     }
+}
+
+// Ensure a student record exists for the given user
+function ensureStudentRecord(user) {
+    let student = students.find(s => s.username === user.username);
+    
+    if (!student) {
+        // Generate a new student ID
+        const maxId = students.length > 0 ? Math.max(...students.map(s => s.id)) : 0;
+        student = {
+            id: maxId + 1,
+            username: user.username,
+            name: user.name,
+            score: 0,
+            quizzesCompleted: 0,
+            lastActivity: 'Just registered',
+            attendance: []
+        };
+        students.push(student);
+        saveDataToStorage();
+    }
+    
+    return student;
+}
+
+// Display current logged-in student's info
+function displayCurrentStudentInfo() {
+    if (!currentUser || currentUser.role !== 'student') {
+        return;
+    }
+    
+    const student = students.find(s => s.username === currentUser.username);
+    if (!student) return;
+    
+    const infoCard = document.getElementById('studentInfoCard');
+    const noSelection = document.getElementById('noStudentSelected');
+    
+    // Calculate attendance rate
+    const attendanceRate = student.attendance && student.attendance.length > 0 
+        ? Math.round((student.attendance.length / quizzesData.length) * 100) 
+        : 0;
+    
+    // Update student info
+    document.getElementById('infoName').textContent = student.name;
+    document.getElementById('infoId').textContent = `ID: ${student.id}`;
+    document.getElementById('infoScore').textContent = `${student.score}%`;
+    document.getElementById('infoQuizzes').textContent = student.quizzesCompleted || 0;
+    document.getElementById('infoAttendance').textContent = `${attendanceRate}%`;
+    document.getElementById('infoGrade').textContent = getGradeLetter(student.score);
+    
+    // Build attendance history
+    const attendanceList = document.getElementById('attendanceList');
+    if (student.attendance && student.attendance.length > 0) {
+        const attendanceHTML = student.attendance.map(att => `
+            <div class="attendance-item">
+                <div class="att-icon">📝</div>
+                <div class="att-details">
+                    <div class="att-title">${att.quizTitle}</div>
+                    <div class="att-info">
+                        <span class="att-date">📅 ${att.date}</span>
+                        <span class="att-time">🕐 ${att.time}</span>
+                    </div>
+                </div>
+                <div class="att-result">
+                    <div class="att-score">${att.score}%</div>
+                    <div class="att-grade grade-${att.grade.toLowerCase()}">${att.grade}</div>
+                </div>
+            </div>
+        `).join('');
+        attendanceList.innerHTML = attendanceHTML;
+    } else {
+        attendanceList.innerHTML = '<p class="no-attendance">No quiz attempts recorded yet</p>';
+    }
+    
+    // Show info card
+    infoCard.style.display = 'block';
+    noSelection.style.display = 'none';
 }
 
 // Logout function
@@ -121,8 +208,8 @@ function register() {
     // Check if username already exists
     const existingUser = users.find(u => u.username === username);
     if (existingUser) {
-        errorDiv.textContent = '❌ Username already exists. Please choose a different one.';
-        errorDiv.style.display = 'block';
+        alert('Username already exists. Please choose a different username.');
+        document.getElementById('regUsername').focus();
         return;
     }
 
@@ -130,6 +217,11 @@ function register() {
     const newUser = { username, password, role, name };
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
+
+    // If registering as a student, create a student record
+    if (role === 'student') {
+        ensureStudentRecord(newUser);
+    }
 
     // Clear form
     document.getElementById('regName').value = '';
@@ -433,6 +525,17 @@ function navigateToSection(sectionName) {
         renderAchievements();
     } else if (sectionName === 'leaderboard') {
         renderLeaderboard();
+    } else if (sectionName === 'studentInfo') {
+        // Handle Student Info section
+        const messageSection = document.getElementById('studentMessageSection');
+        if (currentUser && currentUser.role === 'student') {
+            // For students, show the message and their data
+            messageSection.style.display = 'block';
+            displayCurrentStudentInfo();
+        } else if (currentUser && currentUser.role === 'teacher') {
+            // For teachers, hide the message and show dropdown
+            messageSection.style.display = 'none';
+        }
     }
 }
 
