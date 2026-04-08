@@ -1,4 +1,10 @@
-// ========== AUTHENTICATION SYSTEM ==========
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║   STUDENT PERFORMANCE SYSTEM - JavaScript Backend                ║
+// ║   Member 2: Authentication & Quiz Management                     ║
+// ║   Member 3: Student Records & Data Management                    ║
+// ╚══════════════════════════════════════════════════════════════════╝
+
+// ========== MEMBER 2: AUTHENTICATION SYSTEM (Lines 1-200) ==========
 let currentUser = null;
 
 // Load users from localStorage or initialize with default users
